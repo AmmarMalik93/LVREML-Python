@@ -30,7 +30,7 @@ known and unknown confounders.
 import numpy as np
 from numpy.linalg import matrix_rank
 
-def initial_screen(C,Z,vcut):
+def initial_screen(C,Z,vcut,verbose):
     ns,nc = Z.shape # no. of covariates and samples
     beta2 = np.zeros((nc,),dtype=float)
     for k in range(nc):
@@ -41,7 +41,8 @@ def initial_screen(C,Z,vcut):
     vs = np.sort(varexpl)[::-1]
     t = np.argsort(varexpl)[::-1]
     if vcut == 0:
-        print("No covariates to be selected") 
+        if verbose == True:
+            print("No covariates to be selected") 
         idx = np.array([], dtype=int)
     elif vcut < 1 and vcut > 0:
  #       print("Finding linearly independent covariates w.r.t given threshold %.4f"%vcut)   
@@ -54,7 +55,8 @@ def initial_screen(C,Z,vcut):
         idx = idx[idx>0]
         
     else:
-        print("Finding best %d linearly independent covariates"%vcut)
+        if verbose == True:
+            print("Finding best %d linearly independent covariates"%vcut)
         idx = t
         temp = 1
         for k in range(1,len(idx)):

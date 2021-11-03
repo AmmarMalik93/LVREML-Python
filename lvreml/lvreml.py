@@ -85,7 +85,7 @@ def lvreml(C,Z,targetX):
             # check if 3rd argument wants a given number of latent
             # variables or target variance explained; in both cases
             # adjust to make sure the solution will be valid
-            if targetX >= 1:
+            if type(targetX) == np.int32: # >= 1:
                 nx = np.round(targetX) # number of latent variables
                 # find the smallest number of latent variables we must
                 # include (largest number we can cut)
@@ -94,7 +94,7 @@ def lvreml(C,Z,targetX):
                 if ncut_max < Evx.shape[0]-nx:
                     print("Number of latent variables asked for is too small")
                     print("Infering minimum number of latent variables: %d"%(Evx.shape[0]-ncut_max-1))
-                    ncut = ncut_max+1
+                    ncut = ncut_max#+1
                 elif nx > Evx.shape[0]:
                     print("Number of latent variables asked for is too large")
                     print("Infering maximum number of latent variables: %d"%Evx.shape[0])
@@ -103,7 +103,7 @@ def lvreml(C,Z,targetX):
                     print("Inferring desired number of latent variables: %d"%(nx))
                     ncut = Evx.shape[0]-nx
  
-            elif targetX >= 0:
+            elif type(targetX) == np.float64: #targetX >= 0:
                 varexpl = targetX # target variance explained
                 # Set the target residual variance
                 resvar = min([(1-varexpl)*trC/ns, lambdamin])
@@ -114,7 +114,7 @@ def lvreml(C,Z,targetX):
                 if ncut.size == 0:
                     ncut = np.array([])
                 else:
-                    ncut = ncut.T[-1][0]+1
+                    ncut = ncut.T[-1][0]#+1
                 
             else:
                 raise Exception('lvreml::lvreml::3rd argument must be integer or value between zero and one')
@@ -124,7 +124,7 @@ def lvreml(C,Z,targetX):
                 sigma2 = 0
             else:
                 # estimate sigma^2 parameter
-                sigma2 = Evx[0:ncut+1].mean()
+                sigma2 = Evx[0:ncut].mean() #sigma2 = Evx[0:ncut+1].mean()
             
             # pull back selected eigenvectors of C22 to original space
             X = np.dot(U2,Vx[:,np.flip(t[ncut:])]);
@@ -165,9 +165,9 @@ def lvreml(C,Z,targetX):
         sigma2vec = np.cumsum(Evx)/range(1,Evx.shape[0]+1)
            
         nmax = np.array((Evx[1:]-sigma2vec[:len(sigma2vec)-1]>0).nonzero()).T[-1][0]
-        if targetX >= 1:
+        if type(targetX) == np.int32 : # >= 1:
             nx = ns - np.round(targetX)
-        elif targetX >= 0:
+        elif type(targetX) == np.float64 : # >= 0:
             varexpl = targetX        
             resvar = (1-varexpl)*trC/ns
             nx = np.array((sigma2vec<resvar).nonzero()).T[-1][0]+1
