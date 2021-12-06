@@ -112,9 +112,11 @@ def lvreml(C,Z,targetX):
                 # no less than the target variance explained
                 ncut = (np.array(np.logical_and(sigma2vec<resvar,Evx>Evx[0]).nonzero()))#.T[-1][0]+1
                 if ncut.size == 0:
+                    
                     ncut = np.array([])
                 else:
-                    ncut = ncut.T[-1][0]#+1
+                    
+                    ncut = ncut.T[-1][0]+1
                 
             else:
                 raise Exception('lvreml::lvreml::3rd argument must be integer or value between zero and one')
@@ -149,7 +151,10 @@ def lvreml(C,Z,targetX):
             D = np.array([])
         
         # Return covariance matrix K
-        K = np.c_[Z,X].dot((np.r_[(np.c_[B,D]),(np.c_[D.T, np.diag(alpha2)])])).dot(np.r_[Z.T,X.T]) + np.eye(ns)*sigma2
+        if X.size != 0:
+            K = np.c_[Z,X].dot((np.r_[(np.c_[B,D]),(np.c_[D.T, np.diag(alpha2)])])).dot(np.r_[Z.T,X.T]) + np.eye(ns)*sigma2
+        else:
+            K = Z.dot(B.dot(Z.T)) + np.eye(ns)*sigma2
         K = 0.5*(K+K.T)
         
     else:

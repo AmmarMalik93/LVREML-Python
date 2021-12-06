@@ -33,9 +33,13 @@ from numpy.linalg import matrix_rank
 def initial_screen(C,Z,vcut,verbose):
     ns,nc = Z.shape # no. of covariates and samples
     beta2 = np.zeros((nc,),dtype=float)
+    varexpl = np.zeros((nc,),dtype=float)
     for k in range(nc):
         beta2[k] = (ns*(np.dot(np.dot(Z[:,k].T,C),Z[:,k]))/(ns-1)) - (np.trace(C)/(ns-1))
-    varexpl = beta2/np.trace(C)
+    beta2[beta2<0] = 0
+
+    varexpl[beta2>0] = beta2[beta2>0]/np.trace(C)
+
 #    varexpl = varexpl[varexpl>0]
     # get best linearly independent set with varexpl>threshold, if necessary
     vs = np.sort(varexpl)[::-1]
